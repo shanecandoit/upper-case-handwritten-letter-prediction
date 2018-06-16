@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+#from flask import Flask, render_template, request
+from flask import *
 from datetime import datetime
 
 #from flask.ext.heroku import Heroku
