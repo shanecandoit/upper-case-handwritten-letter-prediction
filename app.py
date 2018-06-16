@@ -151,12 +151,12 @@ def delete_old():
 
 @app.route('/')
 def index():
-    here=os.path.abspath(__file__)
-    print('here',here)
-    near=os.listdir('.')
-    print('near',near)
-    above=os.listdir('../')
-    print('above',above)
+    #here=os.path.abspath(__file__)
+    #print('here',here)
+    #near=os.listdir('.')
+    #print('near',near)
+    #above=os.listdir('../')
+    #print('above',above)
     global model
     delete_old()
     if not model:
@@ -178,8 +178,8 @@ def upload_file():
         if request.form['text']:
             tx = request.form['text']
             #print('text',tx)
-            here=os.path.abspath(__file__)
-            print('upload here',here)
+            #here=os.path.abspath(__file__)
+            #print('upload here',here)
             filename=ms()+'.png'
             save_b64(tx, filename)
             #resize('uploads/'+filename)
