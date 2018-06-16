@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request
 from datetime import datetime
 
-from flask.ext.heroku import Heroku
+#from flask.ext.heroku import Heroku
+#ExtDeprecationWarning: Importing flask.ext.heroku is deprecated, use flask_heroku instead.
+from flask_heroku import Heroku
 
 app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    the_time = datetime.now().strftime("%A, %d %b %Y %l:%M %p")
+    the_time = datetime.now()#.strftime("%A, %d %b %Y %l:%M %p")
 
     return """
     <h1>Hello heroku</h1>
