@@ -2,7 +2,8 @@ Flask==0.12.2
 flask-heroku==0.1.9
 Keras==2.0.8
 #numpy==1.12.1
-numpy
+#numpy
+numpy==1.14.5
 Pillow==4.1.1
 #scikit-image==0.13.0
 #scikit-learn==0.18.1
