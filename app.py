@@ -140,12 +140,14 @@ def model_predict(img_path, model):
 # delete old files
 def delete_old():
     import os
-    files = os.listdir('uploads/')
-    if len(files) > 50:
-        old5 = os.listdir('uploads/')[:5]
-        for old in old5:
-            os.remove('uploads/'+old)
-
+    try:
+        files = os.listdir('uploads/')
+        if len(files) > 50:
+            old5 = os.listdir('uploads/')[:5]
+            for old in old5:
+                os.remove('uploads/'+old)
+    except FileNotFoundError:
+        pass
 
 @app.route('/')
 def index():
