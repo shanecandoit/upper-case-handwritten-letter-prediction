@@ -176,8 +176,11 @@ def allowed_file(filename):
 def upload_file():
     delete_old()
     # check model
-    if not model or not graph:
+    global model
+    global graph
+    if not model:
         model = load_model()
+    if flask_workaround and not graph:
         graph = tf.get_default_graph()
     #global model # doesnt write to global model, so dont put global here?
     if request.method == 'POST':
