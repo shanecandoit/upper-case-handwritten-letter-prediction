@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<style>
+    canvas.draw:hover{
+        background: #f6f6f6;
+    }
+    intput#btn-save{
+        dispaly:none;
+    }
+</style>
+<script type="text/javascript">
+
+    var canvas,
+        ctx, 
+        flag = false,
+        prevX = 0,
+        currX = 0,
+        prevY = 0,
+        currY = 0,
+        dot_flag = false;
+
+    var x = "black",
+        y = 5;
+
+function init() {
+    canvas = document.getElementById('can');
+    ctx = canvas.getContext("2d");
+    w = canvas.width;
+    h = canvas.height;
+
+    // white background, not alpha
+    ctx.beginPath();
+    ctx.lineWidth="1";
+    ctx.strokeStyle="white";
+    ctx.fillStyle="white";
+    ctx.fillRect(0,0,w,h);
+    ctx.stroke();
+
+    canvas.addEventListener("mousemove", function (e) {
+        findxy('move', e)
+    }, false);
+    canvas.addEventListener("mousedown", function (e) {
+        findxy('down', e)
+    }, false);
+    canvas.addEventListener("mousepress", function (e) {
+        findxy('down', e)
+    }, false);
+        canvas.addEventListener("mouseup", function (e) {
+        findxy('up', e)
+    }, false);
+    canvas.addEventListener("mouseenter", function (e) {
+        if( x=='black'){
+        document.body.style.cursor = 'pointer';
+        }
+        else if( x=='white'){
+        document.body.style.cursor = 'crosshair';
+        }
+        else{
+        document.body.style.cursor = 'default';
+        }
+    }, false);
+    canvas.addEventListener("mouseout", function (e) {
+        document.body.style.cursor = 'default';
+        findxy('out', e)
+        }, false);
+    }
+
+function color(obj) {
+    switch (obj.id) {
+    case "black":
+        x = "black";
+        //document.body.style.cursor = 'pointer';
+        break;
+    case "white":
+        x = "white";
+        break;
+    }
+    if (x == "white"){
+        // erase has a bigger brush
+        y = 20;
+    } else {
+        y = 5;
+    }
+}
+
+function draw() {
+    ctx.beginPath();
+    ctx.moveTo(prevX, prevY);
+    ctx.lineTo(currX, currY);
+    ctx.strokeStyle = x;
+    ctx.lineWidth = y;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function erase() {
+    // white background, not alpha
+    ctx.beginPath();
+    ctx.lineWidth="1";
+    ctx.strokeStyle="white";
+    ctx.fillStyle="white";
+    ctx.fillRect(0,0,w,h);
+    ctx.stroke();
+
+    document.getElementById("canvasimg").style.display = "none";
+}
+
+function save() {
+    document.getElementById("canvasimg").style.border = "2px solid";
+    var dataURL = canvas.toDataURL();
+    document.getElementById("canvasimg").src = dataURL;
+    document.getElementById("canvasimg").style.display = "inline";
+
+    //var decoded = atob(dataURL.split(",")[1])
+    var decoded = dataURL.split(",")[1];
+    //console.log('decoded',decoded);
+
+    var file_b64 = document.getElementById('image-text');
+    file_b64.value = decoded;
+    
+    upload( decoded );
+    
+    // upload file
+    //var file = document.getElementById('image-file');
+    // https://stackoverflow.com/questions/4006520/using-html5-file-uploads-with-ajax-and-jquery
+    //var file = document.getElementById('fileBox').files[0]; //Files[0] = 1st file
+    //var reader = new FileReader();
+    //reader.readAsDataURL(dataURL, 'UTF-8');
+    //reader.onload = shipOff;
+
+    //document.getElementById("btn-save").style.dislplay=absolute;
+    document.getElementById("btn-save").style = "position:absolute;top:50%;left:50%; ";
+}
+
+function upload( b64 ){
+    //https://stackoverflow.com/questions/2320069/jquery-ajax-file-upload
+    
+    var formData = new FormData();
+    formData.append('text', b64);
+    console.log( 'upload formData',formData);
+    
+    var resp = $.ajax({
+        type: "POST",
+        //url: "127.0.0.1:5000/upload/",
+        url: "/upload/",
+        xhr: function () {
+            var myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                // no progress bar
+                //myXhr.upload.addEventListener('progress', that.progressHandling, false);
+            }
+            return myXhr;
+        },
+        success: function (data) {
+            // your callback here
+            console.log(data);
+            //alert(data);
+
+            var link = data['link'];
+            var scores = data['score'];
+            var score_num = {};
+            var top_score=0;
+            var best_char='';
+
+            for( ch in scores ){ 
+                var score = parseFloat(scores[ch])*100.0;
+
+                if( score > top_score ){
+                    top_score = score;
+                    best_char = ch;
+                }
+                score_num [ ch ]= score;
+                console.log(ch,score); 
+            }
+
+            var res = document.getElementById('result');
+            res.innerHTML += '<br> <img alt="' +best_char+ '" src="' +link.replace('.png','-small.png')+ '"/> '
+                          + ' <a href="' +link+ '">' +link.replace('/uploads/','')+ '</a> '
+                          + ' Letter: '+ best_char
+                          + ' Score: '+top_score
+                          + ' <br> '
+                          + '\n';
+        },
+        error: function (error) {
+            // handle error
+            console.log('error',error);
+        },
+        async: true,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        timeout: 60000
+    });
+    
+    console.log('resp',resp);
+}
+
+function dosave() {
+
+    var dataURL = document.getElementById("canvasimg").src;// = dataURL;
+    var base64 = document.getElementById("canvasimg").src;
+    var link = document.createElement("a");
+    //var link   = document.getElementById('btn-save');
+    var fileName = (''+Math.random()).substr(2,8)+'.png';
+
+    link.setAttribute("href", base64);
+    link.setAttribute("download", fileName);
+    link.click();
+}
+
+function shipOff(event) {
+    var result = event.target.result;
+    //var fileName = document.getElementById('fileBox').files[0].name; //Should be 'picture.jpg'
+    var fileName = document.getElementById('image-file').files[0].name;
+    $.post('/upload/', { data: result, name: fileName }, continueSubmission);
+}
+
+function findxy(res, e) {
+    if (res == 'down') {
+        prevX = currX;
+        prevY = currY;
+        currX = e.clientX - canvas.offsetLeft;
+        currY = e.clientY - canvas.offsetTop;
+
+        flag = true;
+        dot_flag = true;
+        if (dot_flag) {
+            ctx.beginPath();
+            ctx.fillStyle = x;
+            ctx.fillRect(currX, currY, 2, 2);
+            ctx.closePath();
+            dot_flag = false;
+        }
+    }
+    if (res == 'up' || res == "out") {
+            flag = false;
+    }
+    if (res == 'move') {
+        if (flag) {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - canvas.offsetLeft;
+            currY = e.clientY - canvas.offsetTop;
+            draw();
+        }
+    }
+}
+</script>
+<title>Hidden Abilities OCR Demo</title>
+</head>
+<body onload="init()">
+
+<h2> Hidden Abilities OCR tech demo <br>
+     Draw a single letter and press 'ocr' </h2>
+
+<canvas id="can" class="draw" width="300" height="300" 
+    style="position:absolute;top:10%;left:10%;border:2px solid;">
+</canvas>
+
+<div style="position:absolute;top:12%;left:40%;">
+    Draw
+</div>
+<div id="black" onclick="color(this)" 
+    style="position:absolute;top:10%;left:40%;width:17px;height:17px;background:black;">
+</div>
+
+<div style="position:absolute;top:20%;left:40%;">Erase</div>
+<div id="white" onclick="color(this)" 
+    style="position:absolute;top:22%;left:40%;width:15px;height:15px;background:white;border:2px solid;" >
+</div>
+
+<img id="canvasimg" style="position:absolute;top:10%;left:52%; display:none;">
+
+<input type="button" value="ocr" id="btn" size="30" onclick="save()" 
+    style="position:absolute;top:50%;left:10%;">
+<input type="button" value="clear" id="clr" size="23" onclick="erase()" 
+    style="position:absolute;top:50%;left:15%;">
+<input type="button" value="save" id="btn-save" size="30" onclick="dosave()" 
+    style="display:none;">
+
+<div style="display: none;">
+    Upload:
+    <form enctype="multipart/form-data" action="/uploads/" method=
+    "post">
+    <input id="image-text" type="text"> <input id="image-file"
+    type="file"> <input value="submit" type="submit">
+    </form>
+</div>
+
+<div id="result" style="position:absolute;top:60%;left:10%;">
+Result:
+</div>
+
+</body>
+</html>
+
