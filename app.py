@@ -153,6 +153,10 @@ def delete_old():
 def index():
     here=os.path.abspath(__file__)
     print('here',here)
+    near=os.listdirs('.')
+    print('near',near)
+    above=os.listdirs('../')
+    print('above',above)
     global model
     delete_old()
     if not model:
