@@ -1,4 +1,3 @@
-flask
 Flask
 gunicorn
 Flask-Heroku
