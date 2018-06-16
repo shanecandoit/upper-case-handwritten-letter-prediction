@@ -123,6 +123,9 @@ def model_predict(img_path, model):
     # https://github.com/keras-team/keras/issues/2397
     if flask_workaround:
         global graph
+        if not graph:
+            load_model()
+            graph = tf.get_default_graph()
         print('graph',graph)
         with graph.as_default():
             #print('graph',graph)
