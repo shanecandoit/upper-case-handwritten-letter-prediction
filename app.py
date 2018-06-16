@@ -175,6 +175,10 @@ def allowed_file(filename):
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload_file():
     delete_old()
+    # check model
+    if not model or not graph:
+        model = load_model()
+        graph = tf.get_default_graph()
     #global model # doesnt write to global model, so dont put global here?
     if request.method == 'POST':
         #print(dir(request))
