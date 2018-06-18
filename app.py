@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
 from flask import *
 from PIL import Image
+import PIL.ImageOps
 
 import numpy as np
 
