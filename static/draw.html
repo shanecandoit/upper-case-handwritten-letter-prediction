@@ -12,6 +12,9 @@
     intput#btn-save{
         dispaly:none;
     }
+    img.invert {
+        filter: invert(100%);
+    }
 </style>
 <script type="text/javascript">
 
@@ -25,7 +28,7 @@
         dot_flag = false;
 
     var x = "black",
-        y = 5;
+        y = 20;
 
 function init() {
     canvas = document.getElementById('can');
@@ -82,9 +85,9 @@ function color(obj) {
     }
     if (x == "white"){
         // erase has a bigger brush
-        y = 20;
+        y = 30;
     } else {
-        y = 5;
+        y = 20;
     }
 }
 
@@ -114,7 +117,11 @@ function save() {
     document.getElementById("canvasimg").style.border = "2px solid";
     var dataURL = canvas.toDataURL();
     document.getElementById("canvasimg").src = dataURL;
-    document.getElementById("canvasimg").style.display = "inline";
+    
+    var showProcImage=false;
+    if( showProcImage ){
+        document.getElementById("canvasimg").style.display = "inline";
+    }
 
     //var decoded = atob(dataURL.split(",")[1])
     var decoded = dataURL.split(",")[1];
@@ -134,7 +141,7 @@ function save() {
     //reader.onload = shipOff;
 
     //document.getElementById("btn-save").style.dislplay=absolute;
-    document.getElementById("btn-save").style = "position:absolute;top:50%;left:50%; ";
+    //document.getElementById("btn-save").style = "position:absolute;top:50%;left:50%; ";
 }
 
 function upload( b64 ){
@@ -179,12 +186,16 @@ function upload( b64 ){
             }
 
             var res = document.getElementById('result');
-            res.innerHTML += '<br> <img alt="' +best_char+ '" src="' +link.replace('.png','-small.png')+ '"/> '
-                          + ' <a href="' +link+ '">' +link.replace('/uploads/','')+ '</a> '
-                          + ' Letter: '+ best_char
-                          + ' Score: '+top_score
-                          + ' <br> '
-                          + '\n';
+            var thumb = link.replace('.png','-small.png');
+            var newest = '<br> <img class="invert" alt="' +best_char+ '" src="' +thumb+ '"/> '
+                       + ' <a href="' +link+ '">' +link.replace('/uploads/','')+ '</a> '
+                       + ' Letter: '+ best_char
+                       + ' Score: '+top_score
+                       + ' <br> '
+                       + '\n';
+            newest = newest.replace( 'Score: 100', '');
+            var old = res.innerHTML;
+            res.innerHTML = newest + old;
         },
         error: function (error) {
             // handle error
@@ -277,11 +288,11 @@ function findxy(res, e) {
 
 <img id="canvasimg" style="position:absolute;top:10%;left:52%; display:none;">
 
-<input type="button" value="ocr" id="btn" size="30" onclick="save()" 
-    style="position:absolute;top:50%;left:10%;">
-<input type="button" value="clear" id="clr" size="23" onclick="erase()" 
-    style="position:absolute;top:50%;left:15%;">
-<input type="button" value="save" id="btn-save" size="30" onclick="dosave()" 
+<input type="button" value="Predict" id="btn" size="30" onclick="save()" 
+    style="position:absolute;top:45%;left:10%;">
+<input type="button" value="Clear" id="clr" size="23" onclick="erase()" 
+    style="position:absolute;top:45%;left:20%" 
+<input id="btn-save" size="30" onclick="dosave()" 
     style="display:none;">
 
 <div style="display: none;">
@@ -293,8 +304,10 @@ function findxy(res, e) {
     </form>
 </div>
 
-<div id="result" style="position:absolute;top:60%;left:10%;">
-Result:
+<div style="position:absolute;top:60%;left:10%;">
+    <p>Results:</p>
+    <div id="result">
+    </div>
 </div>
 
 </body>

@@ -85,6 +85,17 @@ def load_model():
     return model
 
 ## PREDICT
+def str2d_250(ary):
+    res=''
+    for r in ary:
+        for c in r:
+            ch=' '
+            if c<250:
+                ch='*'
+            res+=ch
+        res+='\n'
+    return res
+
 from keras.preprocessing import image
 from PIL import Image
 from PIL import ImageFilter
@@ -94,27 +105,46 @@ def model_predict(img_path, model):
     # from 3 channels to 1
     img_grey = img.convert("L")
     
-    g_blur = img_grey.filter(ImageFilter.GaussianBlur(5))
-    
+    ## black-on-white to white-on-black
+    ## try no blur
+    #g_blur = img_grey.filter(ImageFilter.GaussianBlur(5))
     target=28,28
-    small = g_blur.resize(target)
+    #small = g_blur.resize(target)
+    small = img_grey.resize(target)
+    #small_inv = (255-small)
+    small_inv = PIL.ImageOps.invert(small)
     smallfile = img_path.replace('.png','-small.png')
-    small.save( smallfile )
+    small_inv.save( smallfile )
     #print 'small'
     
+    ## np array from image
     # Preprocessing the image
-    x = image.img_to_array(small).astype('float32')
+    #x = image.img_to_array(small).astype('float32')
+    # csv-to-image uses uint8
+    #x = small_inv.img_to_array(small).astype('uint8')
+    image_array = np.asarray( small_inv.getdata() )
+    image_array = image_array.reshape(28, 28, 1).astype('float32')
+    #print('image_array',image_array.shape)
+    #print('image_array',image_array)
+    x = image_array
+    
+    ## test the np array
+    #test_image = Image.fromarray(image_array.astype('uint8'))
+    #test_image_p = img_path.replace('.png','-np.png')
+    #test_image.save( test_image_p )
+    
     #print x.shape
-    #print str2d_250(x)
+    print( str2d_250(x))
     
     # invert colors
     # we trained on inverted colors
     #print('invert')
-    x = (255-x)
+    #x = (255-x)
     #print 'x'
     #print x.shape
     #print str2d_0(x)
     
+    # ValueError: Error when checking input: expected conv2d_1_input to have 4 dimensions, but got array with shape (1, 28, 28)
     samp = np.expand_dims( x, axis=0) # to put the [3] into a [4]
     #print 'samp.shape',samp.shape
     #print('model_predict model',model)
@@ -123,21 +153,21 @@ def model_predict(img_path, model):
     # https://github.com/keras-team/keras/issues/2397
     if flask_workaround:
         global graph
-        if not graph:
-            load_model()
-            graph = tf.get_default_graph()
         print('graph',graph)
         with graph.as_default():
             #print('graph',graph)
             preds = model.predict(samp)
             #return preds
             scores = letter_scores( preds )
+            print('score',scores)
             return scores
     else:
         preds = model.predict(samp)
         #return preds
         scores = letter_scores( preds )
+        print('score',scores)
         return scores
+
 
 
 # delete old files

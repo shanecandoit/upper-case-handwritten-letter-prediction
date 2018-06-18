@@ -1,4 +1,4 @@
-Flask==0.12.2
+Flask==1.0.2
 flask-heroku==0.1.9
 Keras==2.2.0
 #numpy==1.12.1
