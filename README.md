@@ -1,44 +1,39 @@
-# Python: Getting Started
 
-A barebones Django app, which can easily be deployed to Heroku.
+# Upper case handwritten letter prediction
 
-This application supports the [Getting Started with Python on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) article - check it out.
+A flask app, deployed to Heroku.
 
-## Running Locally
+## Why?
 
-Make sure you have Python [installed properly](http://install.python-guide.org). Also, install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) and [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup).
+I wanted to show friends and family what machine learning can do.
 
-```sh
-$ git clone git@github.com:heroku/python-getting-started.git
-$ cd python-getting-started
+There are lots of good resources on classifying MNIST.
 
-$ pipenv install
+Here is one that deploys to heroku:
+[github.com/sugyan/tensorflow-mnist](https://github.com/sugyan/tensorflow-mnist)
 
-$ createdb python_getting_started
+a video:
+[MLPaint: the Real-Time Handwritten Digit Recognizer
+](https://www.youtube.com/watch?v=WGdLCXDiDSo)
 
-$ python manage.py migrate
-$ python manage.py collectstatic
+## My twist
 
-$ heroku local
-```
+Rather than copy-paste and learn only a little.
+I decided to find a dataset, smoosh it into a csv, train the model, and deploy to the web.
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
+## How
+1. get data 
+   - [nist.gov/itl/iad/image-group/emnist-dataset](https://www.nist.gov/itl/iad/image-group/emnist-dataset)
+2. turn into a csv
+3. train model on csv
+   - [kaggle.com/ashishguptajiit/cnn-using-keras-accuracy-after-10-epochs-98-89](https://www.kaggle.com/ashishguptajiit/cnn-using-keras-accuracy-after-10-epochs-98-89)
+   - 600 mb csv file (not checked in, bake your own ;)
+4. commmit model to repo
+5. write code to load model and predict on images POSTed
+5. deploy 
 
-## Deploying to Heroku
+## Paint in Browser
 
-```sh
-$ heroku create
-$ git push heroku master
+Borrowed from here:
+[draw-on-html5-canvas-using-a-mouse](https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse)
 
-$ heroku run python manage.py migrate
-$ heroku open
-```
-or
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-## Documentation
-
-For more information about using Python on Heroku, see these Dev Center articles:
-
-- [Python on Heroku](https://devcenter.heroku.com/categories/python)
