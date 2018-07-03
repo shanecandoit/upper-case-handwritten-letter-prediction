@@ -2,6 +2,7 @@
 # Upper case handwritten letter prediction
 
 A flask app, deployed to Heroku.
+**[GO See it](https://hidden-abilites-ocr-demo.herokuapp.com/)**
 
 ## Why?
 
@@ -37,3 +38,4 @@ I decided to find a dataset, smoosh it into a csv, train the model, and deploy t
 Borrowed from here:
 [draw-on-html5-canvas-using-a-mouse](https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse)
 
+[Screenshot](https://github.com/shanecandoit/upper-case-handwritten-letter-prediction/??/preview.png)
